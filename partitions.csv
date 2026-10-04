@@ -1,0 +1,8 @@
+# ESP32-S3-WROOM-1 N8R8 — 8 MB flash (must fit 0x800000)
+# Bootloader 0x0, partition table 0x8000.
+# factory 3M; model takes the rest (~4.81 MB) and must stay named "model" for ESP-SR.
+# Name,   Type, SubType, Offset,  Size, Flags
+nvs,      data, nvs,     0x9000,  24K,
+phy_init, data, phy,     0xf000,  4K,
+factory,  app,  factory, 0x10000, 3M,
+model,    data, ,        ,        0x4F0000,

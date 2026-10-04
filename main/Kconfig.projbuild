@@ -1,0 +1,117 @@
+menu "Microphone"
+
+    choice MIC_INTERFACE
+        prompt "Microphone interface"
+        default MIC_ANALOG_ADC
+        help
+            SmartTek production wiring uses a MAX981 / MAX9814 analog electret
+            amplifier into an ESP32-S3 ADC GPIO (not I2S). Digital MEMS mics
+            use I2S; PDM mics use I2S PDM.
+
+        config MIC_ANALOG_ADC
+            bool "Analog ADC (MAX9814 / MAX981)"
+        config MIC_I2S_STD
+            bool "I2S standard (INMP441 / ICS-43434 / SPH0645)"
+        config MIC_I2S_PDM
+            bool "I2S PDM"
+    endchoice
+
+    config MIC_ADC_GPIO
+        int "ADC GPIO (MAX9814 OUT)"
+        depends on MIC_ANALOG_ADC
+        default 4
+        range 1 10
+        help
+            ESP32-S3 ADC1 GPIO for MAX9814 OUT. Default GPIO 4 (ADC1_CH3)
+            is user-confirmed for this board. Do not use GPIO 48 for the mic.
+
+    config MIC_I2S_BCLK_GPIO
+        int "I2S BCLK / SCK GPIO"
+        depends on MIC_I2S_STD
+        default 4
+        range 0 48
+        help
+            Unconfirmed default. SmartTek documents no I2S microphone pinout.
+
+    config MIC_I2S_WS_GPIO
+        int "I2S WS / LRCLK GPIO"
+        depends on MIC_I2S_STD
+        default 5
+        range 0 48
+        help
+            Unconfirmed default. SmartTek documents no I2S microphone pinout.
+
+    config MIC_I2S_DIN_GPIO
+        int "I2S DIN / SD GPIO"
+        depends on MIC_I2S_STD
+        default 6
+        range 0 48
+        help
+            Unconfirmed default. SmartTek documents no I2S microphone pinout.
+            Production lamp LED data is GPIO 48; do not use 48 for the mic if the strip is wired.
+
+    config MIC_PDM_CLK_GPIO
+        int "PDM CLK GPIO"
+        depends on MIC_I2S_PDM
+        default 4
+        range 0 48
+        help
+            Unconfirmed default. SmartTek documents no microphone pinout.
+
+    config MIC_PDM_DIN_GPIO
+        int "PDM DATA GPIO"
+        depends on MIC_I2S_PDM
+        default 5
+        range 0 48
+        help
+            Unconfirmed default. SmartTek documents no microphone pinout.
+
+    choice MIC_I2S_SLOT
+        prompt "I2S microphone slot"
+        depends on MIC_I2S_STD
+        default MIC_I2S_SLOT_LEFT
+        help
+            INMP441 uses the left slot when L/R is tied to GND.
+
+        config MIC_I2S_SLOT_LEFT
+            bool "Left (L/R = GND)"
+        config MIC_I2S_SLOT_RIGHT
+            bool "Right (L/R = VDD)"
+    endchoice
+
+    config MIC_BITSHIFT
+        int "I2S 32-bit sample right shift"
+        depends on MIC_I2S_STD
+        default 14
+        range 8 16
+        help
+            INMP441 and SPH0645 typically use 14. If the audio is too quiet,
+            try 12. If it clips, try 16.
+
+    config MIC_SOFTWARE_GAIN
+        int "Software gain multiplier"
+        default 3 if MIC_ANALOG_ADC
+        default 1
+        range 1 16
+        help
+            Applied after capture (and after DC bias removal for analog ADC).
+            Raise if recognition is weak; lower if audio clips. Values above 3
+            with high AGC can over-drive ambient and fill the AFE FEED ringbuf.
+
+    config SR_ALWAYS_LISTEN
+        bool "Skip wake word and listen continuously"
+        default y
+        help
+            Default on so recognized phrases print on serial without saying
+            "Hi ESP" first. Disable to require the wake word before commands.
+
+    config MIC_RMS_DEBUG
+        bool "Print MIC rms/peak often (mic compare / diagnostics)"
+        default n
+        help
+            When enabled, feed task prints "MIC rms=... peak=..." about every
+            500 ms so a PC utility can correlate speaker playback with the
+            MAX9814 + ADC path. Leave off for normal listening — UART stalls
+            can backlog ADC DMA and flood AFE FEED.
+
+endmenu

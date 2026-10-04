@@ -1,0 +1,39 @@
+========================================
+  SPEAK NOW — human speech calibration
+  Distance: 20–40 cm from the mic
+  Speak slowly and clearly
+  Pause ~2 seconds between each phrase
+========================================
+
+Round 1 (say each phrase once, pause 2s):
+  1. hello
+  2. yes
+  3. no
+  4. start
+  5. stop
+  6. thank you
+  7. turn on the light
+  8. turn off the light
+  9. volume up
+  10. volume down
+
+Round 2 (repeat the same list):
+  1. hello
+  2. yes
+  3. no
+  4. start
+  5. stop
+  6. thank you
+  7. turn on the light
+  8. turn off the light
+  9. volume up
+  10. volume down
+
+Tips:
+  - Face the MAX9814 mic (GPIO4 / board edge)
+  - Normal conversational volume is fine; no need to shout
+  - Keep ~2 s silence between phrases so MultiNet can settle
+  - Capture window is ~3 minutes — finish both rounds if you can
+
+Watch serial for: RECOGNIZED / LOW_PROB lines with probability scores.
+========================================
