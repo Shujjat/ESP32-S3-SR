@@ -2,6 +2,8 @@
 
 On-device English command recognition using Espressif ESP-SR. Recognized phrases are printed on the serial terminal. No cloud, no Wi-Fi.
 
+**Parent-project handoff docs:** [Docs/](Docs/)
+
 This chip cannot do free-form dictation in real time. It recognizes a list of English phrases you define. By default it **always listens** (no wake word); disable that in menuconfig to require **Hi ESP** first.
 
 ## Hardware
